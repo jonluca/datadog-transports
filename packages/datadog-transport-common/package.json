@@ -42,7 +42,8 @@
     "url": "https://github.com/theogravity/datadog-transports/issues"
   },
   "dependencies": {
-    "@datadog/datadog-api-client": "^1.25.0"
+    "@datadog/datadog-api-client": "^1.25.0",
+    "pako": "^2.1.0"
   },
   "devDependencies": {
     "tsconfig": "workspace:*",

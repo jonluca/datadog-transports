@@ -22,6 +22,7 @@
     "enabled": true,
     "ignore": ["vendor/*", "dist/*", ".pnpm-store/*"],
     "rules": {
+      "style": { "noParameterAssign": "off" },
       "performance": {
         "noDelete": "off"
       },
