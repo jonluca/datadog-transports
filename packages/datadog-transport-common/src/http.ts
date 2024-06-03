@@ -1,12 +1,58 @@
 import pako from "pako";
 
-import {
-  type HttpLibrary,
-  type RequestContext,
-  ResponseContext,
-  type ZstdCompressorCallback,
+import type {
+  HttpFile,
+  HttpLibrary,
+  RequestContext,
+  ResponseBody,
+  ZstdCompressorCallback,
 } from "@datadog/datadog-api-client/dist/packages/datadog-api-client-common/http/http";
 /* eslint-disable node/no-deprecated-api */
+
+export class ResponseContext {
+  public constructor(
+    public httpStatusCode: number,
+    public headers: { [key: string]: string },
+    public body: ResponseBody
+  ) {}
+
+  /**
+   * Parse header value in the form `value; param1="value1"`
+   *
+   * E.g. for Content-Type or Content-Disposition
+   * Parameter names are converted to lower case
+   * The first parameter is returned with the key `""`
+   */
+  public getParsedHeader(headerName: string): { [parameter: string]: string } {
+    const result: { [parameter: string]: string } = {};
+    if (!this.headers[headerName]) {
+      return result;
+    }
+
+    const parameters = this.headers[headerName].split(";");
+    for (const parameter of parameters) {
+      let [key, value] = parameter.split("=", 2);
+      key = key.toLowerCase().trim();
+      if (value === undefined) {
+        result[""] = key;
+      } else {
+        value = value.trim();
+        if (value.startsWith('"') && value.endsWith('"')) {
+          value = value.substring(1, value.length - 1);
+        }
+        result[key] = value;
+      }
+    }
+    return result;
+  }
+
+  public async getBodyAsFile(): Promise<HttpFile> {
+    const data = await this.body.binary();
+    const fileName =
+      this.getParsedHeader("content-disposition")["filename"] || "";
+    return { data, name: fileName };
+  }
+}
 
 const isModern =
   typeof Buffer !== "undefined" &&
