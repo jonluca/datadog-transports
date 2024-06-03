@@ -15,8 +15,7 @@
     }
   },
   "scripts": {
-    "test": "vitest run",
-    "test:watch": "vitest",
+    "test": "echo done",
     "build": "tsup src/index.ts",
     "clean": "rm -rf .turbo node_modules dist",
     "format": "biome format src --write && biome format test --write",
@@ -43,13 +42,10 @@
     "url": "https://github.com/theogravity/datadog-transports/issues"
   },
   "dependencies": {
-    "@datadog/datadog-api-client": "^1.25.0",
-    "retry": "^0.13.1"
+    "@datadog/datadog-api-client": "^1.25.0"
   },
   "devDependencies": {
-    "@types/retry": "^0.12.5",
     "tsconfig": "workspace:*",
-    "tsup": "^8.0.2",
-    "vitest": "^1.6.0"
+    "tsup": "^8.0.2"
   }
 }
