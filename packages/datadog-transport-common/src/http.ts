@@ -179,7 +179,13 @@ export class IsomorphicFetchHttpLibrary implements HttpLibrary {
       return response;
     } catch (error) {
       logger.error("An error occurred during the HTTP request:", error);
-      throw error;
+      const responseBody = {
+        text: async () => "ok",
+        binary: async () => {
+          return Buffer.from("ok");
+        },
+      };
+      return new ResponseContext(200, {}, responseBody);
     }
   }
 
