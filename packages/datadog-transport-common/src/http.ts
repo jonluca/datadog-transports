@@ -216,7 +216,7 @@ export class IsomorphicFetchHttpLibrary implements HttpLibrary {
       }
       return response;
     } catch (error) {
-      console.error("An error occurred during the HTTP request:", error);
+      // console.error("An error occurred during the HTTP request:", error);
       const responseBody = {
         text: async () => "ok",
         binary: async () => {
