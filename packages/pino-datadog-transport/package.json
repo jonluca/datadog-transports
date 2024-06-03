@@ -1,6 +1,6 @@
 {
-  "name": "pino-datadog-transport",
-  "version": "3.0.3",
+  "name": "@weights/pino-datadog-transport",
+  "version": "1.0.0",
   "description": "A pino v7+ transport for sending logs to Datadog",
   "files": [
     "dist"
@@ -20,7 +20,7 @@
     "build": "tsup src/index.ts",
     "format": "biome format src --write && biome format test --write",
     "lint": "biome lint src && biome lint test",
-    "lint:check": "biome check --apply-unsafe src && check --apply-unsafe test",
+    "lint:check": "biome check --apply-unsafe src && biome check --apply-unsafe test",
     "typecheck": "tsc --noEmit"
   },
   "repository": {
@@ -41,12 +41,12 @@
     "typescript"
   ],
   "dependencies": {
-    "datadog-transport-common": "workspace:*",
-    "pino-abstract-transport": "^1.0.0"
+    "@weights/datadog-transport-common": "workspace:*",
+    "pino-abstract-transport": "^1.2.0"
   },
   "devDependencies": {
     "tsconfig": "workspace:*",
     "tsup": "^8.0.2",
-    "vitest": "^1.4.0"
+    "vitest": "^1.6.0"
   }
 }

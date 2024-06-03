@@ -1,5 +1,5 @@
+import { type DDTransportOptions, DataDogTransport } from "@weights/datadog-transport-common";
 import build from "pino-abstract-transport";
-import { DataDogTransport, type DDTransportOptions } from "datadog-transport-common";
 import { convertLevel } from "./convert-level";
 
 export default (options: DDTransportOptions) => {

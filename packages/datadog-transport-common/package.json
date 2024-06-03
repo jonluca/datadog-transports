@@ -1,5 +1,5 @@
 {
-  "name": "datadog-transport-common",
+  "name": "@weights/datadog-transport-common",
   "version": "3.0.2",
   "description": "A library for sending batches of JSON log data to datadog",
   "files": [
@@ -21,7 +21,7 @@
     "clean": "rm -rf .turbo node_modules dist",
     "format": "biome format src --write && biome format test --write",
     "lint": "biome lint src && biome lint test",
-    "lint:check": "biome check --apply-unsafe src && check --apply-unsafe test",
+    "lint:check": "biome check --apply-unsafe src && biome check --apply-unsafe test",
     "typecheck": "tsc --noEmit"
   },
   "publishConfig": {
@@ -43,13 +43,13 @@
     "url": "https://github.com/theogravity/datadog-transports/issues"
   },
   "dependencies": {
-    "@datadog/datadog-api-client": "^1.23.0",
+    "@datadog/datadog-api-client": "^1.25.0",
     "retry": "^0.13.1"
   },
   "devDependencies": {
     "@types/retry": "^0.12.5",
     "tsconfig": "workspace:*",
     "tsup": "^8.0.2",
-    "vitest": "^1.4.0"
+    "vitest": "^1.6.0"
   }
 }

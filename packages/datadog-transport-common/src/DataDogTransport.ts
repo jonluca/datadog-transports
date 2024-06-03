@@ -1,10 +1,10 @@
-import type { HTTPLogItem } from "@datadog/datadog-api-client/dist/packages/datadog-api-client-v2/models/HTTPLogItem";
-import type { LogsApiSubmitLogRequest } from "@datadog/datadog-api-client/dist/packages/datadog-api-client-v2/apis/LogsApi";
 import { client, v2 } from "@datadog/datadog-api-client";
-import pRetry from "./vendor/p-retry";
-import exitHook from "./vendor/exit-hook";
+import type { LogsApiSubmitLogRequest } from "@datadog/datadog-api-client/dist/packages/datadog-api-client-v2/apis/LogsApi";
+import type { HTTPLogItem } from "@datadog/datadog-api-client/dist/packages/datadog-api-client-v2/models/HTTPLogItem";
+
 import { LogStorage } from "./LogStorage";
 import type { DDTransportOptions, SendLogOpts } from "./types";
+import exitHook from "./vendor/exit-hook";
 
 // Define constants for various limits and intervals
 const LOGS_PAYLOAD_SIZE_LIMIT = 5138022;
@@ -55,28 +55,24 @@ export class DataDogTransport {
    * Performs the actual sending of logs to datadog
    * @private
    */
-  private sendLogs({ logsToSend, bucketName }: Omit<SendLogOpts, "apiInstance" | "options">) {
-    pRetry(
-      async () => {
-        const params: LogsApiSubmitLogRequest = {
-          body: logsToSend, // Logs to send
-          contentEncoding: "gzip", // Encoding type
-        };
+  private sendLogs({
+    logsToSend,
+  }: Omit<SendLogOpts, "apiInstance" | "options">) {
+    (async () => {
+      const retries = this.config.retries ?? 5;
+      for (let i = 0; i < retries; i++) {
+        try {
+          const params: LogsApiSubmitLogRequest = {
+            body: logsToSend, // Logs to send
+            contentEncoding: "gzip", // Encoding type
+          };
 
-        // Attempt to send logs via API
-        const result = await this.apiInstance.submitLog(params);
-        if (this.config.onDebug) {
-          this.config.onDebug(`(${bucketName}) Sending ${logsToSend.length} logs to Datadog completed`);
-        }
-
-        return result;
-      },
-      { retries: this.config.retries ?? 5 },
-    ).catch((err) => {
-      if (this.config.onError) {
-        this.config.onError(err, logsToSend);
+          // Attempt to send logs via API
+          await this.apiInstance.submitLog(params);
+          return;
+        } catch {}
       }
-    });
+    })();
   }
 
   /**
@@ -85,7 +81,11 @@ export class DataDogTransport {
   private setupRegularSend() {
     if (!this.config.sendImmediate) {
       if (this.config.onDebug) {
-        this.config.onDebug(`Configured to send logs every ${this.config.sendIntervalMs || FORCE_SEND_MS}ms`);
+        this.config.onDebug(
+          `Configured to send logs every ${
+            this.config.sendIntervalMs || FORCE_SEND_MS
+          }ms`
+        );
       }
 
       this.timer = setInterval(() => {
@@ -94,7 +94,9 @@ export class DataDogTransport {
 
         if (logCount > 0) {
           if (this.config.onDebug) {
-            this.config.onDebug(`(${currentBucket}) Sending ${logCount} logs to Datadog on timer`);
+            this.config.onDebug(
+              `(${currentBucket}) Sending ${logCount} logs to Datadog on timer`
+            );
           }
 
           this.sendLogs({
@@ -118,7 +120,9 @@ export class DataDogTransport {
       exitHook(() => {
         if (this.logStorage.getLogCount() > 0) {
           if (this.config.onDebug) {
-            this.config.onDebug("Shutdown detected. Attempting to send remaining logs to Datadog");
+            this.config.onDebug(
+              "Shutdown detected. Attempting to send remaining logs to Datadog"
+            );
           }
           if (this.timer) {
             clearInterval(this.timer);
@@ -164,9 +168,12 @@ export class DataDogTransport {
 
     if (logEntryLength > LOG_SIZE_LIMIT) {
       if (this.config.onError) {
-        this.config.onError(new Error(`Log entry exceeds size limit of ${LOG_SIZE_LIMIT} bytes: ${logEntryLength}`), [
-          logItem,
-        ]);
+        this.config.onError(
+          new Error(
+            `Log entry exceeds size limit of ${LOG_SIZE_LIMIT} bytes: ${logEntryLength}`
+          ),
+          [logItem]
+        );
       }
     }
 
@@ -189,13 +196,17 @@ export class DataDogTransport {
 
     // Check if logs should be sent based on size or count
     const logCount = this.logStorage.getLogCount();
-    const shouldSend = this.logStorage.getLogBucketByteSize() > LOGS_PAYLOAD_SIZE_LIMIT || logCount > MAX_LOG_ITEMS;
+    const shouldSend =
+      this.logStorage.getLogBucketByteSize() > LOGS_PAYLOAD_SIZE_LIMIT ||
+      logCount > MAX_LOG_ITEMS;
 
     if (shouldSend) {
       const currentBucket = this.logStorage.currentBucket;
 
       if (this.config.onDebug) {
-        this.config.onDebug(`(${currentBucket}) Sending ${logCount} logs to Datadog`);
+        this.config.onDebug(
+          `(${currentBucket}) Sending ${logCount} logs to Datadog`
+        );
       }
 
       this.sendLogs({

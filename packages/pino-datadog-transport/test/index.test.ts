@@ -1,5 +1,5 @@
-import { vi, describe, it, expect, beforeEach } from "vitest";
-import { DataDogTransport, type DDTransportOptions } from "datadog-transport-common";
+import { type DDTransportOptions, DataDogTransport } from "datadog-transport-common";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { convertLevel } from "../src/convert-level";
 import buildTransport from "../src/index";
 

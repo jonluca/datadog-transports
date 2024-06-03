@@ -1,5 +1,5 @@
-import type { ConfigurationParameters } from "@datadog/datadog-api-client/dist/packages/datadog-api-client-common/configuration";
 import type { v2 } from "@datadog/datadog-api-client";
+import type { ConfigurationParameters } from "@datadog/datadog-api-client/dist/packages/datadog-api-client-common/configuration";
 import type { HTTPLogItem } from "@datadog/datadog-api-client/dist/packages/datadog-api-client-v2/models/HTTPLogItem";
 
 export interface DDTransportOptions {
