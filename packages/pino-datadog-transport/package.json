@@ -1,5 +1,5 @@
 {
-  "name": "@weights/pino-datadog-transport",
+  "name": "@weights-ai/pino-datadog-transport",
   "version": "1.0.0",
   "description": "A pino v7+ transport for sending logs to Datadog",
   "files": [
@@ -40,7 +40,7 @@
     "typescript"
   ],
   "dependencies": {
-    "@weights/datadog-transport-common": "workspace:*",
+    "@weights-ai/datadog-transport-common": "workspace:*",
     "pino-abstract-transport": "^1.2.0"
   },
   "devDependencies": {

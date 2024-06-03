@@ -1,7 +1,7 @@
 import {
   type DDTransportOptions,
   DataDogTransport,
-} from "@weights/datadog-transport-common";
+} from "@weights-ai/datadog-transport-common";
 import build from "pino-abstract-transport";
 export const convertLevel = (level: number | string): string => {
   if (typeof level === "string") {
