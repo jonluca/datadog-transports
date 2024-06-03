@@ -17,9 +17,9 @@
   "scripts": {
     "test": "echo done",
     "build": "tsup src/index.ts",
-    "format": "biome format src --write && biome format test --write",
-    "lint": "biome lint src && biome lint test",
-    "lint:check": "biome check --apply-unsafe src && biome check --apply-unsafe test",
+    "format": "biome format src --write",
+    "lint": "biome lint src",
+    "lint:check": "biome check --apply-unsafe src",
     "typecheck": "tsc --noEmit"
   },
   "repository": {
