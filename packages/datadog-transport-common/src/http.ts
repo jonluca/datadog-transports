@@ -5,8 +5,7 @@ import {
   type RequestContext,
   ResponseContext,
   type ZstdCompressorCallback,
-} from "@datadog/datadog-api-client/dist/packages/datadog-api-client-common";
-import { logger } from "@datadog/datadog-api-client";
+} from "@datadog/datadog-api-client/dist/packages/datadog-api-client-common/http/http";
 /* eslint-disable node/no-deprecated-api */
 
 const isModern =
@@ -82,9 +81,6 @@ export class IsomorphicFetchHttpLibrary implements HttpLibrary {
   public backoffMultiplier!: number;
 
   public send(request: RequestContext): Promise<ResponseContext> {
-    if (this.debug) {
-      this.logRequest(request);
-    }
     const method = request.getHttpMethod().toString();
     let body = request.getBody();
 
@@ -154,10 +150,6 @@ export class IsomorphicFetchHttpLibrary implements HttpLibrary {
         responseBody
       );
 
-      if (this.debug) {
-        this.logResponse(response);
-      }
-
       if (
         this.shouldRetry(
           this.enableRetry,
@@ -178,7 +170,7 @@ export class IsomorphicFetchHttpLibrary implements HttpLibrary {
       }
       return response;
     } catch (error) {
-      logger.error("An error occurred during the HTTP request:", error);
+      console.error("An error occurred during the HTTP request:", error);
       const responseBody = {
         text: async () => "ok",
         binary: async () => {
@@ -223,52 +215,5 @@ export class IsomorphicFetchHttpLibrary implements HttpLibrary {
       return retryIntervalFromHeader;
     }
     return backoffMultiplier ** currentAttempt * backoffBase;
-  }
-
-  private logRequest(request: RequestContext): void {
-    const headers: { [key: string]: string } = {};
-    const originalHeaders = request.getHeaders();
-    for (const header in originalHeaders) {
-      headers[header] = originalHeaders[header];
-    }
-    if (headers["DD-API-KEY"]) {
-      headers["DD-API-KEY"] = headers["DD-API-KEY"].replace(/./g, "x");
-    }
-    if (headers["DD-APPLICATION-KEY"]) {
-      headers["DD-APPLICATION-KEY"] = headers["DD-APPLICATION-KEY"].replace(
-        /./g,
-        "x"
-      );
-    }
-
-    const headersJSON = JSON.stringify(headers, null, 2).replace(/\n/g, "\n\t");
-    const method = request.getHttpMethod().toString();
-    const url = request.getUrl().toString();
-    const body = request.getBody()
-      ? JSON.stringify(request.getBody(), null, 2).replace(/\n/g, "\n\t")
-      : "";
-    const compress = request.getHttpConfig().compress ?? true;
-
-    logger.debug(
-      "\nrequest: {\n",
-      `\turl: ${url}\n`,
-      `\tmethod: ${method}\n`,
-      `\theaders: ${headersJSON}\n`,
-      `\tcompress: ${compress}\n`,
-      `\tbody: ${body}\n}\n`
-    );
-  }
-
-  private logResponse(response: ResponseContext): void {
-    const httpStatusCode = response.httpStatusCode;
-    const headers = JSON.stringify(response.headers, null, 2).replace(
-      /\n/g,
-      "\n\t"
-    );
-    logger.debug(
-      "response: {\n",
-      `\tstatus: ${httpStatusCode}\n`,
-      `\theaders: ${headers}\n`
-    );
   }
 }
